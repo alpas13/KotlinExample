@@ -58,20 +58,6 @@ object UserHolder {
         }
     }
 
-    fun importUsersFromFile(): Int {
-        File(fileName).forEachLine { line ->
-            val (fullName, email, phone) = line.split(',')
-            if (email.isNotBlank() && email != "email") {
-                val tempPass = Date().toString()
-                registerUser(fullName, email, tempPass)
-            } else if (phone.isNotBlank() && phone != "phone") {
-                registerUserByPhone(fullName, phone)
-            }
-        }
-
-        return map.size
-    }
-
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun clearHolder() {
         map.clear()
