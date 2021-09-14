@@ -1,13 +1,10 @@
 package ru.skillbranch.kotlinexample
 
 import androidx.annotation.VisibleForTesting
-import java.io.File
 import java.lang.IllegalArgumentException
-import java.util.*
 
 object UserHolder {
     private val map = mutableMapOf<String, User>()
-    private const val fileName = "src/main/java/ru/skillbranch/kotlinexample/users.csv"
 
     fun registerUser(
         fullName: String,
@@ -18,7 +15,7 @@ object UserHolder {
             return User.makeUser(fullName, email, password)
                 .also { user -> map[user.login] = user }
         } else
-            throw IllegalArgumentException("User with this email already exist")
+            throw IllegalArgumentException("A user with this email already exist")
     }
 
     fun registerUserByPhone(
@@ -29,7 +26,7 @@ object UserHolder {
             !checkIsNotIllegalPhone(phone) ->
                 throw IllegalArgumentException("Phone number is not correct")
             !checkIsUserNotExist(phone = phone) ->
-                throw IllegalArgumentException("User with this phone number already exist")
+                throw IllegalArgumentException("A user with this phone number already exist")
             else ->
                 User.makeUser(fullName = fullName, phone = phone)
                     .also { user -> map[user.login] = user }
@@ -40,7 +37,7 @@ object UserHolder {
         val phone = cleanPhoneNumber(rawPhone)
         if (!checkIsUserNotExist(phone))
             map[phone]?.updateRequestCode()
-        else throw IllegalArgumentException("User with this phone number does not exist")
+        else throw IllegalArgumentException("A user with this phone number does not exist")
     }
 
     fun loginUser(rawLogin: String, password: String): String? {
@@ -58,9 +55,50 @@ object UserHolder {
         }
     }
 
+    fun importUsers(users: List<String>): Int {
+        users.map { line ->
+            val (fullName, email, password, phone) = line.split(';')
+                .map { value -> if (value.isNotBlank()) value else null }
+
+            val isFullUserData = !fullName.isNullOrBlank() &&
+                    !email.isNullOrBlank() &&
+                    !password.isNullOrBlank()
+
+            if (isFullUserData) {
+                val (hashPrefix, hashPassword) = password!!.split(':')
+
+                registerImportedUsers(fullName!!, email!!, hashPrefix, hashPassword)
+            } else if (!fullName.isNullOrBlank() && !phone.isNullOrBlank()) {
+                registerUserByPhone(fullName, phone)
+            } else {
+                throw IllegalArgumentException("User must not have ")
+            }
+        }
+
+        return map.size
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun clearHolder() {
         map.clear()
+    }
+
+    private fun registerImportedUsers(
+        fullName: String,
+        email: String,
+        hashPrefix: String,
+        hashPassword: String
+    ): User {
+        if (checkIsUserNotExist(email)) {
+            return User.makeUser(
+                fullName,
+                email,
+                hashPrefix = hashPrefix,
+                hashPassword = hashPassword
+            )
+                .also { user -> map[user.login] = user }
+        } else
+            throw IllegalArgumentException("A user with this email already exist")
     }
 
     private fun checkIsUserNotExist(email: String? = null, phone: String? = null): Boolean {

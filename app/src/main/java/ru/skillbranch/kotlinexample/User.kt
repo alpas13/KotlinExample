@@ -45,8 +45,10 @@ class User private constructor(
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     var accessCode: String? = null
 
+    private var hashPassPrefix: String? = null
+
     private val salt: String by lazy {
-        ByteArray(16).also { SecureRandom().nextBytes(it) }.toString()
+        setSalt()
     }
 
     // for mail
@@ -63,6 +65,24 @@ class User private constructor(
     ) {
         println("Secondary mail constructor")
         passwordHash = encrypt(password)
+    }
+
+    // for import
+    constructor(
+        firstName: String,
+        lastName: String?,
+        email: String,
+        hashPrefix: String,
+        hashPassword: String
+    ) : this(
+        firstName,
+        lastName,
+        email = email,
+        meta = mapOf("src" to "csv")
+    ) {
+        println("Import mail constructor")
+        hashPassPrefix = hashPrefix
+        passwordHash = hashPassword
     }
 
     // for phone
@@ -107,7 +127,7 @@ class User private constructor(
 
     fun checkPassword(pass: String) = encrypt(pass) == passwordHash
 
-    fun chengPassword(oldPassword: String, newPassword: String) {
+    fun changePassword(oldPassword: String, newPassword: String) {
         if (checkPassword(oldPassword)) passwordHash = encrypt(newPassword)
         else throw IllegalArgumentException(
             "The entered password does not match the current password"
@@ -118,6 +138,11 @@ class User private constructor(
         val newCode = generateAccessCode()
         accessCode = newCode
         sendAccessCodeToUser(phone, newCode)
+    }
+
+    private fun setSalt(): String {
+        return if (!hashPassPrefix.isNullOrBlank()) hashPassPrefix!!
+        else ByteArray(16).also { SecureRandom().nextBytes(it) }.toString()
     }
 
     private fun encrypt(password: String) = salt.plus(password).md5()
@@ -150,6 +175,8 @@ class User private constructor(
             fullName: String,
             email: String? = null,
             password: String? = null,
+            hashPrefix: String? = null,
+            hashPassword: String? = null,
             phone: String? = null,
         ): User {
             val (firstName, lastName) = fullName.fullNameToPair()
@@ -161,6 +188,15 @@ class User private constructor(
                     lastName,
                     email,
                     password
+                )
+                !email.isNullOrBlank() &&
+                        !hashPrefix.isNullOrBlank() &&
+                        !hashPassword.isNullOrBlank() -> User(
+                    firstName,
+                    lastName,
+                    email,
+                    hashPrefix,
+                    hashPassword
                 )
                 else -> throw IllegalArgumentException("Email or phone must not be null or blank")
             }
