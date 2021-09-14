@@ -186,7 +186,7 @@ class ExampleUnitTest {
         Assert.assertEquals(expectedInfo, successResult)
     }
 
-    @Test
+    /*@Test
     fun import_csv_file() {
         val users: List<String> = listOf(
             "John Doe;JohnDoe@unknow.com;[B@1f54bcc7:ee3a4a26aa61b10184a457b2b0ba8627;;",
@@ -234,5 +234,5 @@ class ExampleUnitTest {
 
         Assert.assertEquals(expectedInfo, successResult)
         Assert.assertEquals(expectedInfo2, successResult2)
-    }
+    }*/
 }
