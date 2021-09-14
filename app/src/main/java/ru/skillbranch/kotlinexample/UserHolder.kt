@@ -15,7 +15,7 @@ object UserHolder {
             return User.makeUser(fullName, email, password)
                 .also { user -> map[user.login] = user }
         } else
-            throw IllegalArgumentException("A user with this email already exist")
+            throw IllegalArgumentException("A user with this email already exists")
     }
 
     fun registerUserByPhone(
@@ -98,7 +98,7 @@ object UserHolder {
             )
                 .also { user -> map[user.login] = user }
         } else
-            throw IllegalArgumentException("A user with this email already exist")
+            throw IllegalArgumentException("A user with this email already exists")
     }
 
     private fun checkIsUserNotExist(email: String? = null, phone: String? = null): Boolean {
