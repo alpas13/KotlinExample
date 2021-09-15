@@ -55,7 +55,8 @@ object UserHolder {
         }
     }
 
-    fun importUsers(users: List<String>): Int {
+    fun importUsers(users: List<String>): List<User> {
+        val importedUsers = mutableListOf<User>()
         users.map { line ->
             val (fullName, email, password, phone) = line.split(';')
                 .map { value -> if (value.isNotBlank()) value else null }
@@ -67,15 +68,15 @@ object UserHolder {
             if (isFullUserData) {
                 val (hashPrefix, hashPassword) = password!!.split(':')
 
-                registerImportedUsers(fullName!!, email!!, hashPrefix, hashPassword)
+                importedUsers.add(registerImportedUsers(fullName!!, email!!, hashPrefix, hashPassword))
             } else if (!fullName.isNullOrBlank() && !phone.isNullOrBlank()) {
-                registerUserByPhone(fullName, phone)
+                importedUsers.add(registerUserByPhone(fullName, phone))
             } else {
                 throw IllegalArgumentException("User must not have ")
             }
         }
 
-        return map.size
+        return importedUsers.map { it }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)

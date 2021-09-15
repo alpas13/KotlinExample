@@ -186,7 +186,7 @@ class ExampleUnitTest {
         Assert.assertEquals(expectedInfo, successResult)
     }
 
-    /*@Test
+    @Test
     fun import_csv_file() {
         val users: List<String> = listOf(
             "John Doe;JohnDoe@unknow.com;[B@1f54bcc7:ee3a4a26aa61b10184a457b2b0ba8627;;",
@@ -205,7 +205,7 @@ class ExampleUnitTest {
         )
 
         val holder = UserHolder
-        holder.importUsers(users)
+        val importedUsers = holder.importUsers(users)
 
         val expectedInfo = """
             firstName: John
@@ -218,9 +218,11 @@ class ExampleUnitTest {
             meta: {src=csv}
         """.trimIndent()
 
-        val successResult = holder.loginUser("JohnDoe@unknow.com", "QhQcIT")
+        val successResult = importedUsers[0].userInfo
+        val successResult2 = holder.loginUser("JohnDoe@unknow.com", "QhQcIT")
 
         Assert.assertEquals(expectedInfo, successResult)
+        Assert.assertEquals(expectedInfo, successResult2)
     }
 
     @Test
@@ -234,5 +236,5 @@ class ExampleUnitTest {
 
         Assert.assertEquals(expectedInfo, successResult)
         Assert.assertEquals(expectedInfo2, successResult2)
-    }*/
+    }
 }
