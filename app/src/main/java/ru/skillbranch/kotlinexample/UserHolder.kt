@@ -25,7 +25,7 @@ object UserHolder {
     ): User {
         return when {
             !checkIsNotIllegalPhone(phone) ->
-                throw IllegalArgumentException("Phone number is not correct")
+                throw IllegalArgumentException("Enter a valid phone number starting with a + and containing 11 digits")
             !checkIsUserNotExist(phone = phone) ->
                 throw IllegalArgumentException("A user with this phone already exists")
             else ->
