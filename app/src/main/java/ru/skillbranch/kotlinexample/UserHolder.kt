@@ -27,7 +27,7 @@ object UserHolder {
             !checkIsNotIllegalPhone(phone) ->
                 throw IllegalArgumentException("Phone number is not correct")
             !checkIsUserNotExist(phone = phone) ->
-                throw IllegalArgumentException("A user with this phone already exist")
+                throw IllegalArgumentException("A user with this phone already exists")
             else ->
                 User.makeUser(fullName = fullName, phone = phone, import = import)
                     .also { user -> map[user.login] = user }
