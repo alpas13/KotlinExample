@@ -90,11 +90,12 @@ class User private constructor(
         firstName: String,
         lastName: String?,
         rawPhone: String,
+        import: Boolean? = null,
     ) : this(
         firstName,
         lastName,
         rawPhone = rawPhone,
-        meta = mapOf("auth" to "sms")
+        meta = if (import == true) mapOf("src" to "csv") else mapOf("auth" to "sms")
     ) {
         println("Secondary phone constructor")
         val code = generateAccessCode()
@@ -178,10 +179,12 @@ class User private constructor(
             hashPrefix: String? = null,
             hashPassword: String? = null,
             phone: String? = null,
+            import: Boolean? = null,
         ): User {
             val (firstName, lastName) = fullName.fullNameToPair()
 
             return when {
+                !phone.isNullOrBlank() && import == true -> User(firstName, lastName, phone, import = import)
                 !phone.isNullOrBlank() -> User(firstName, lastName, phone)
                 !email.isNullOrBlank() && !password.isNullOrBlank() -> User(
                     firstName,

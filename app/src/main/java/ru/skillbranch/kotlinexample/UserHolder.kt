@@ -21,14 +21,15 @@ object UserHolder {
     fun registerUserByPhone(
         fullName: String,
         phone: String,
+        import: Boolean? = null,
     ): User {
         return when {
             !checkIsNotIllegalPhone(phone) ->
                 throw IllegalArgumentException("Phone number is not correct")
             !checkIsUserNotExist(phone = phone) ->
-                throw IllegalArgumentException("A user with this phone number already exist")
+                throw IllegalArgumentException("A user with this phone already exist")
             else ->
-                User.makeUser(fullName = fullName, phone = phone)
+                User.makeUser(fullName = fullName, phone = phone, import = import)
                     .also { user -> map[user.login] = user }
         }
     }
@@ -70,7 +71,7 @@ object UserHolder {
 
                 importedUsers.add(registerImportedUsers(fullName!!, email!!, hashPrefix, hashPassword))
             } else if (!fullName.isNullOrBlank() && !phone.isNullOrBlank()) {
-                importedUsers.add(registerUserByPhone(fullName, phone))
+                importedUsers.add(registerUserByPhone(fullName, phone, true))
             } else {
                 throw IllegalArgumentException("User must not have ")
             }

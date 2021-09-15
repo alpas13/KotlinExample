@@ -207,7 +207,18 @@ class ExampleUnitTest {
         val holder = UserHolder
         val importedUsers = holder.importUsers(users)
 
-        val expectedInfo = """
+        val expectedInfoPhone = """
+            firstName: John
+            lastName: Stone
+            login: +78482395085
+            fullName: John Stone
+            initials: J S
+            email: null
+            phone: +78482395085
+            meta: {src=csv}
+        """.trimIndent()
+
+        val expectedInfoMail = """
             firstName: John
             lastName: Doe
             login: johndoe@unknow.com
@@ -218,11 +229,11 @@ class ExampleUnitTest {
             meta: {src=csv}
         """.trimIndent()
 
-        val successResult = importedUsers[0].userInfo
-        val successResult2 = holder.loginUser("JohnDoe@unknow.com", "QhQcIT")
+        val successResultPhone = importedUsers[1].userInfo
+        val successResultMail = holder.loginUser("JohnDoe@unknow.com", "QhQcIT")
 
-        Assert.assertEquals(expectedInfo, successResult)
-        Assert.assertEquals(expectedInfo, successResult2)
+        Assert.assertEquals(expectedInfoPhone, successResultPhone)
+        Assert.assertEquals(expectedInfoMail, successResultMail)
     }
 
     @Test
